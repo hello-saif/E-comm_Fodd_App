@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'Home_Page.dart';
+import 'BottomNavBar.dart';
+import 'Screen/Loader/Loader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ class MaanFoodApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const HomePage(),
+      home: const SplashScreen(),
     );
   }
 }

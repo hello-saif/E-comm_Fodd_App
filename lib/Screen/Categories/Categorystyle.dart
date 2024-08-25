@@ -1,22 +1,40 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class CategoryItem extends StatelessWidget {
   final String imageUrl;
   final String label;
 
-  const CategoryItem({super.key, required this.imageUrl, required this.label});
+  const CategoryItem({
+    super.key,
+    required this.imageUrl,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(
-          radius: 30,
-          backgroundImage: NetworkImage(imageUrl),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.network(
+            imageUrl,
+            height: 60.0,
+            width: 60.0,
+            fit: BoxFit.cover,
+          ),
         ),
-        const SizedBox(height: 8),
-        Text(label),
+        const SizedBox(height: 8.0),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center, // Center align the text
+          maxLines: 2, // Allow up to 2 lines
+          overflow: TextOverflow.ellipsis, // Add ellipsis if the text is too long
+        ),
       ],
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../BottomNavBar.dart';
+
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
 
@@ -19,7 +21,7 @@ class _OrderScreenState extends State<OrderScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>BottomNavBar()), (route) => false) ;// Go back to the previous screen
           },
         ),
       ),
@@ -29,3 +31,4 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 }
+

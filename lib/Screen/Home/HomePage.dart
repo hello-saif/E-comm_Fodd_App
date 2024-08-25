@@ -1,26 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'Screen/Categories/Categorystyle.dart';
-import 'Screen/Oder_Section/Order.dart';
-import 'Screen/Products_Items/Food_Product_Item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+import '../Categories/Categories_Screen.dart';
+import '../Categories/Categorystyle.dart';
+import '../Products_Items/Food_Product_Item.dart';
+import '../Products_Items/Popular_Product_Screen.dart';
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
+class Home_Page extends StatelessWidget {
+  const Home_Page({
+    super.key,
+    required FirebaseFirestore firestore,
+  }) : _firestore = firestore;
 
-class _HomePageState extends State<HomePage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  int _selectedIndex = 0; // To track the selected tab
-
-  void _onBottomNavBarTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  final FirebaseFirestore _firestore;
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +62,20 @@ class _HomePageState extends State<HomePage> {
                 stream: _firestore.collection('sliderImages').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Loading indicator
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}'); // Error message
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('No images found'); // No data found message
+                    return const Center(child: Text('No images found'));
                   }
 
                   var sliderImages = snapshot.data!.docs.map((doc) {
                     return {
                       'imageUrl': doc['imageUrl'],
-                      'discount': doc['discount'] ?? 'No discount', // Default text if no discount is available
+                      'discount': doc['discount'] ?? 'No discount',
                     };
                   }).toList();
 
@@ -107,7 +100,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: Stack(
                               children: [
-                                // Discount text
                                 Positioned(
                                   bottom: 10,
                                   left: 10,
@@ -115,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                     color: Colors.black.withOpacity(0.7),
                                     child: Text(
-                                      'FOOD ${data['discount']} OFF', // Add "OFF" to the discount text
+                                      'FOOD ${data['discount']} OFF',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
@@ -142,7 +134,10 @@ class _HomePageState extends State<HomePage> {
                   const Text("Categories", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   GestureDetector(
                     onTap: () {
-                      // Implement CategoriesScreen navigation
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CategoriesScreen()),
+                      );
                     },
                     child: const Text("See all", style: TextStyle(color: Colors.orange)),
                   ),
@@ -155,14 +150,14 @@ class _HomePageState extends State<HomePage> {
                 stream: _firestore.collection('categories').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Loading indicator
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}'); // Error message
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('No categories found'); // No data found message
+                    return const Center(child: Text('No categories found'));
                   }
 
                   var categories = snapshot.data!.docs;
@@ -171,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       children: categories.map((category) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0), // Padding between categories
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: CategoryItem(
                             imageUrl: category['imageUrl'],
                             label: category['name'],
@@ -191,7 +186,10 @@ class _HomePageState extends State<HomePage> {
                   const Text("Popular Product", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   GestureDetector(
                     onTap: () {
-                      // Implement navigation to full product list
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PopularProductsScreen()),
+                      );
                     },
                     child: const Text("See all", style: TextStyle(color: Colors.orange)),
                   ),
@@ -204,21 +202,22 @@ class _HomePageState extends State<HomePage> {
                 stream: _firestore.collection('foodProducts').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Loading indicator
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}'); // Error message
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   }
-
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Text('No products found'); // No data found message
+                    return const Center(child: Text('No products found'));
                   }
 
                   var foodProducts = snapshot.data!.docs;
+                  var limitedProducts = foodProducts.take(4).toList(); // Limit to first 4 products
+
                   List<Widget> productRows = [];
-                  for (int i = 0; i < foodProducts.length; i += 2) {
-                    var product1 = foodProducts[i];
-                    var product2 = i + 1 < foodProducts.length ? foodProducts[i + 1] : null;
+                  for (int i = 0; i < limitedProducts.length; i += 2) {
+                    var product1 = limitedProducts[i];
+                    var product2 = i + 1 < limitedProducts.length ? limitedProducts[i + 1] : null;
 
                     productRows.add(
                       Row(
@@ -248,8 +247,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   }
-                  return Column(
-                    children: productRows,
+
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: productRows,
+                    ),
                   );
                 },
               ),
@@ -257,35 +260,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: _onBottomNavBarTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Order',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_basket),
-            label: 'Cart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer),
-            label: 'Offer',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
     );
   }
 }
-
-
