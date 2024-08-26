@@ -1,13 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
-import 'BottomNavBar.dart';
+import 'package:provider/provider.dart';
 import 'Screen/Loader/Loader.dart';
+import 'Screen/Provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // Initialize Firebase
-  runApp(const MaanFoodApp());
+  runApp(
+      ChangeNotifierProvider(
+        create: (context) => CartProvider(),
+        child: const  MaanFoodApp(),
+      ),
+ );
 }
 
 class MaanFoodApp extends StatelessWidget {

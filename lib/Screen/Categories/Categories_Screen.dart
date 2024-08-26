@@ -32,16 +32,19 @@ class CategoriesScreen extends StatelessWidget {
           return GridView.builder(
             padding: const EdgeInsets.all(16.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4, // 4 categories per row
+              crossAxisCount: 3, // 2 categories per row for better responsiveness
               crossAxisSpacing: 16.0,
               mainAxisSpacing: 16.0,
             ),
             itemCount: categories.length,
             itemBuilder: (context, index) {
               var category = categories[index];
-              return CategoryItem(
-                imageUrl: category['imageUrl'],
-                label: category['name'],
+              return Padding(
+                padding: const EdgeInsets.all(8.0), // Add padding around each category item
+                child: CategoryItem(
+                  imageUrl: category['imageUrl'],
+                  label: category['name'],
+                ),
               );
             },
           );
@@ -50,4 +53,3 @@ class CategoriesScreen extends StatelessWidget {
     );
   }
 }
-

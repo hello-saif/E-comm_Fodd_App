@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 250,),
+               Spacer(),
                 if (_logoUrl.isNotEmpty)
                   ClipOval(
                     child: Image.network(
@@ -97,6 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 5,)
               ],
             ),
           ),

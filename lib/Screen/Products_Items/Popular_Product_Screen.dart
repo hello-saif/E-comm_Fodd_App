@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodiapp/BottomNavBar.dart';
+import 'package:foodiapp/Screen/Cart_Screen/Cart.dart';
 import 'Food_Product_Item.dart';
 
 class PopularProductsScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  PopularProductsScreen({super.key});
+  PopularProductsScreen({super.key, required });
 
   @override
   Widget build(BuildContext context) {
@@ -80,3 +81,4 @@ class PopularProductsScreen extends StatelessWidget {
     );
   }
 }
+

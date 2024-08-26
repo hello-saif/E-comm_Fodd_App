@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foodiapp/Screen/Cart_Screen/Cart.dart';
 
 import '../Categories/Categories_Screen.dart';
 import '../Categories/Categorystyle.dart';
@@ -23,7 +24,9 @@ class Home_Page extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: () {},
+            onPressed: () {
+              // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>CartPage()), (route) => false);
+            },
           ),
         ],
         centerTitle: false,
