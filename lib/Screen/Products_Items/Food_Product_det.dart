@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodiapp/BottomNavBar.dart';
-import 'package:foodiapp/Screen/Products_Items/Popular_Product_Screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-
-import '../Cart_Screen/Cart.dart';
 import '../Cart_Screen/Cart_model.dart';
 import '../Provider.dart';
 
@@ -12,6 +9,7 @@ class ProductDetailPage extends StatefulWidget {
   final String name;
   final double price;
   final double rating;
+  final String description; // Add description field
 
   const ProductDetailPage({
     super.key,
@@ -19,6 +17,7 @@ class ProductDetailPage extends StatefulWidget {
     required this.name,
     required this.price,
     required this.rating,
+    required this.description, // Pass description in constructor
   });
 
   @override
@@ -27,7 +26,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   int _counter = 1;
-  bool _isFavorite = false;  // Track favorite state
+  bool _isFavorite = false;
 
   void addToCart() {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
@@ -40,7 +39,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
     );
 
-    // Show Snackbar message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Product has been added to your cart.'),
@@ -51,10 +49,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   void _toggleFavorite() {
     setState(() {
-      _isFavorite = !_isFavorite;  // Toggle favorite state
+      _isFavorite = !_isFavorite;
     });
-
-    // You can also handle saving to wishlist here if needed
   }
 
   @override
@@ -64,11 +60,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => PopularProductsScreen()),
-                  (route) => false,
-            );
+            Navigator.pop(context);
           },
         ),
         actions: [
@@ -77,24 +69,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               _isFavorite ? Icons.favorite : Icons.favorite_border,
               color: _isFavorite ? Colors.red : Colors.grey,
             ),
-            onPressed: _toggleFavorite,  // Toggle wishlist state
+            onPressed: _toggleFavorite,
           ),
         ],
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Padding(
+      body: SingleChildScrollView(  // Wrap the entire body in SingleChildScrollView
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipOval(
               child: Image.network(
-                widget.imageUrl,
-                height: 200,
-                width: 200,
-                fit: BoxFit.cover,
-              ),
+                  widget.imageUrl,
+                  height: 200,
+                  width: 200,
+                  fit: BoxFit.cover),
             ),
             const SizedBox(height: 20),
             Row(
@@ -158,7 +149,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '\$${widget.price.toStringAsFixed(2)}',
+                  '${widget.price.toStringAsFixed(0)}৳',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -182,11 +173,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ],
             ),
             const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-                    'Fermentum aliquam, arcu, hendrerit nulla amet.',
+                widget.description,  // Display product description from Firebase
                 textAlign: TextAlign.center,
               ),
             ),
@@ -195,10 +185,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               'Read More...',
               style: TextStyle(color: Colors.orange),
             ),
-            const Spacer(),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                addToCart();  // Add to cart function
+                addToCart();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

@@ -6,13 +6,16 @@ class FoodProductItem extends StatefulWidget {
   final String name;
   final double price;
   final double rating;
+  final String description; // Add description field
 
   const FoodProductItem({
     super.key,
     required this.imageUrl,
     required this.name,
     required this.price,
-    required this.rating, required isFavorite,
+    required this.rating,
+    required this.description, // Include description in the constructor
+    required isFavorite,
   });
 
   @override
@@ -86,7 +89,7 @@ class _FoodProductItemState extends State<FoodProductItem> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "\$${widget.price.toStringAsFixed(2)}",
+                        "${widget.price.toStringAsFixed(0)}৳",
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                       Row(
@@ -106,7 +109,7 @@ class _FoodProductItemState extends State<FoodProductItem> {
                   icon: const Icon(Icons.shopping_cart),
                   color: Colors.orange,
                   onPressed: () {
-                    // Navigate to the ProductDetailPage with product details
+                    // Navigate to the ProductDetailPage with product details, including description
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -115,6 +118,7 @@ class _FoodProductItemState extends State<FoodProductItem> {
                           name: widget.name,
                           price: widget.price,
                           rating: widget.rating,
+                          description: widget.description,  // Pass the description here
                         ),
                       ),
                     );

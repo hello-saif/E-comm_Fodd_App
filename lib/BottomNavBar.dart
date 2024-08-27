@@ -19,8 +19,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     Home_Page(firestore: FirebaseFirestore.instance),
     const OrderScreen(),
      CartPage(),
+
+     const OfferScreen(),
     const Profile(),
-    const Offer(),
 
   ];
 

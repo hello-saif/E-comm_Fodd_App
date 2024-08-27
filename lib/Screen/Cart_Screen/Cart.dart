@@ -52,7 +52,7 @@ class CartPage extends StatelessWidget {
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '\$${item.price.toStringAsFixed(2)}',
+                              '${item.price.toStringAsFixed(0)}৳',
                               style: const TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                             Text(
@@ -98,12 +98,12 @@ class CartPage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Total:',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '\$${totalCost.toStringAsFixed(2)}',
+                  '${totalCost.toStringAsFixed(0)}৳',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange),
                 ),
               ],

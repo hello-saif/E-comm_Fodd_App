@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodiapp/BottomNavBar.dart';
-import 'package:foodiapp/Screen/Cart_Screen/Cart.dart';
 import 'Food_Product_Item.dart';
 
 class PopularProductsScreen extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  PopularProductsScreen({super.key, required });
+  PopularProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +16,16 @@ class PopularProductsScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>BottomNavBar()), (route) => false) ;// Go back to the previous screen
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => BottomNavBar()),
+                  (route) => false,
+            ); // Go back to the previous screen
           },
         ),
       ),
       body: StreamBuilder(
-        stream: _firestore.collection('foodProducts').snapshots(), // Remove the limit here
+        stream: _firestore.collection('foodProducts').snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator()); // Loading indicator
@@ -52,6 +55,7 @@ class PopularProductsScreen extends StatelessWidget {
                       price: product1['price'].toDouble(),
                       rating: product1['rating'].toDouble(),
                       isFavorite: product1['isFavorite'] ?? false,
+                      description: product1['description'], // Fetch description
                     ),
                   ),
                   const SizedBox(width: 8.0),
@@ -63,6 +67,7 @@ class PopularProductsScreen extends StatelessWidget {
                         price: product2['price'].toDouble(),
                         rating: product2['rating'].toDouble(),
                         isFavorite: product2['isFavorite'] ?? false,
+                        description: product2['description'], // Fetch description
                       ),
                     ),
                 ],
@@ -81,4 +86,3 @@ class PopularProductsScreen extends StatelessWidget {
     );
   }
 }
-
