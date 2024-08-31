@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:foodiapp/BottomNavBar.dart';
-import 'Food_Product_Item.dart';
+import 'package:provider/provider.dart';
+import '../../BottomNavBar.dart';
+import '../Favorite_Provider.dart';
+import '../Products_Items/Food_Product_Item.dart';
 
-class PopularProductsScreen extends StatelessWidget {
+class Wishlist extends StatefulWidget {
+  Wishlist({super.key});
+
+  @override
+  State<Wishlist> createState() => _WishlistState();
+}
+
+class _WishlistState extends State<Wishlist> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  PopularProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final favoriteProductIds = favoritesProvider.favorites;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Popular Products"),
+        title: const Text('Wishlist'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -20,12 +30,12 @@ class PopularProductsScreen extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (context) => const BottomNavBar()),
                   (route) => false,
-            ); // Go back to the previous screen
+            ); // Go back to the BottomNavBar
           },
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('foodProducts').snapshots(),
+      body: FutureBuilder<QuerySnapshot>(
+        future: _firestore.collection('foodProducts').where('productId', whereIn: favoriteProductIds).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator()); // Loading indicator
@@ -35,14 +45,14 @@ class PopularProductsScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No products found')); // No data found message
+            return const Center(child: Text('No favorite products found')); // No data found message
           }
 
-          var foodProducts = snapshot.data!.docs;
+          final products = snapshot.data!.docs;
           List<Widget> productRows = [];
-          for (int i = 0; i < foodProducts.length; i += 2) {
-            var product1 = foodProducts[i].data() as Map<String, dynamic>;
-            var product2 = i + 1 < foodProducts.length ? foodProducts[i + 1].data() as Map<String, dynamic> : null;
+          for (int i = 0; i < products.length; i += 2) {
+            final product1 = products[i].data() as Map<String, dynamic>;
+            final product2 = i + 1 < products.length ? products[i + 1].data() as Map<String, dynamic> : null;
 
             productRows.add(
               Row(
@@ -54,9 +64,9 @@ class PopularProductsScreen extends StatelessWidget {
                       name: product1['name'] ?? 'No Name',
                       price: (product1['price'] as num).toDouble() ?? 0.0,
                       rating: (product1['rating'] as num).toDouble() ?? 0.0,
-                      isFavorite: product1['isFavorite'] ?? false,
                       description: product1['description'] ?? '',
-                      productId: product1['productId'] ?? '', // Ensure this matches the field in Firestore
+                      productId: product1['productId'] ?? '',
+                      isFavorite: true, // This is optional as `isFavorite` is managed in the provider.
                     ),
                   ),
                   const SizedBox(width: 8.0),
@@ -67,9 +77,9 @@ class PopularProductsScreen extends StatelessWidget {
                         name: product2['name'] ?? 'No Name',
                         price: (product2['price'] as num).toDouble() ?? 0.0,
                         rating: (product2['rating'] as num).toDouble() ?? 0.0,
-                        isFavorite: product2['isFavorite'] ?? false,
                         description: product2['description'] ?? '',
-                        productId: product2['productId'] ?? '', // Ensure this matches the field in Firestore
+                        productId: product2['productId'] ?? '',
+                        isFavorite: true, // This is optional as `isFavorite` is managed in the provider.
                       ),
                     ),
                 ],

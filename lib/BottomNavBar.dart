@@ -16,12 +16,12 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
+
     Home_Page(firestore: FirebaseFirestore.instance),
     const OrderScreen(),
      CartPage(),
-
      const OfferScreen(),
-    const Profile(),
+     ProfileScreen(),
 
   ];
 
@@ -69,3 +69,4 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   }
 }
+

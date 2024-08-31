@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodiapp/BottomNavBar.dart';
 import 'package:provider/provider.dart';
 
+import '../Payment/Cart_Page.dart';
 import '../Provider.dart'; // Import your provider
 
 class CartPage extends StatelessWidget {
@@ -18,7 +20,16 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart Page'),
-
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
+        //   onPressed: () {
+        //     Navigator.pushAndRemoveUntil(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        //           (route) => false,
+        //     );
+        //   },
+        // ),
       ),
       body: Column(
         children: [
@@ -115,7 +126,13 @@ class CartPage extends StatelessWidget {
               width: double.infinity, // Makes the button take the full width of the container
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle checkout action
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CheckoutPage(totalAmount: totalCost),
+                    ),
+                        (route) => false,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
@@ -130,6 +147,7 @@ class CartPage extends StatelessWidget {
                 ),
                 child: const Text('Checkout'),
               ),
+
             ),
           ),
         ],

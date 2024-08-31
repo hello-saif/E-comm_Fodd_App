@@ -7,7 +7,7 @@ import '../Categories/Categorystyle.dart';
 import '../Products_Items/Food_Product_Item.dart';
 import '../Products_Items/Popular_Product_Screen.dart';
 
-class Home_Page extends StatelessWidget {
+class Home_Page extends StatefulWidget {
   const Home_Page({
     super.key,
     required FirebaseFirestore firestore,
@@ -15,6 +15,11 @@ class Home_Page extends StatelessWidget {
 
   final FirebaseFirestore _firestore;
 
+  @override
+  State<Home_Page> createState() => _Home_PageState();
+}
+
+class _Home_PageState extends State<Home_Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +29,7 @@ class Home_Page extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: () {
-              // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>CartPage()), (route) => false);
+              // Implement navigation to notifications screen if needed
             },
           ),
         ],
@@ -61,7 +66,7 @@ class Home_Page extends StatelessWidget {
 
               // Carousel Slider
               StreamBuilder(
-                stream: _firestore.collection('sliderImages').snapshots(),
+                stream: widget._firestore.collection('sliderImages').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -149,7 +154,7 @@ class Home_Page extends StatelessWidget {
 
               // Fetching category data from Firestore
               StreamBuilder(
-                stream: _firestore.collection('categories').snapshots(),
+                stream: widget._firestore.collection('categories').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -185,7 +190,7 @@ class Home_Page extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Popular Product", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text("Popular Products", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -201,7 +206,7 @@ class Home_Page extends StatelessWidget {
 
               // Food Products List fetched from Firebase
               StreamBuilder(
-                stream: _firestore.collection('foodProducts').snapshots(),
+                stream: widget._firestore.collection('foodProducts').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -218,8 +223,8 @@ class Home_Page extends StatelessWidget {
 
                   List<Widget> productRows = [];
                   for (int i = 0; i < limitedProducts.length; i += 2) {
-                    var product1 = limitedProducts[i];
-                    var product2 = i + 1 < limitedProducts.length ? limitedProducts[i + 1] : null;
+                    var product1 = limitedProducts[i].data() as Map<String, dynamic>;
+                    var product2 = i + 1 < limitedProducts.length ? limitedProducts[i + 1].data() as Map<String, dynamic> : null;
 
                     productRows.add(
                       Row(
@@ -227,24 +232,27 @@ class Home_Page extends StatelessWidget {
                         children: [
                           Expanded(
                             child: FoodProductItem(
-                              imageUrl: product1['imageUrl'],
-                              name: product1['name'],
-                              price: product1['price'].toDouble(),
-                              rating: product1['rating'].toDouble(),
+                              imageUrl: product1['imageUrl'] ?? '',
+                              name: product1['name'] ?? 'No Name',
+                              price: (product1['price'] as num).toDouble() ?? 0.0,
+                              rating: (product1['rating'] as num).toDouble() ?? 0.0,
                               isFavorite: product1['isFavorite'] ?? false,
-                              description: product1['description'],
+                              description: product1['description'] ?? '',
+                              productId: product1['productId'] ?? '', // Ensure this matches the field in Firestore
+
                             ),
                           ),
                           const SizedBox(width: 8.0),
                           if (product2 != null)
                             Expanded(
                               child: FoodProductItem(
-                                imageUrl: product2['imageUrl'],
-                                name: product2['name'],
-                                price: product2['price'].toDouble(),
-                                rating: product2['rating'].toDouble(),
+                                imageUrl: product2['imageUrl'] ?? '',
+                                name: product2['name'] ?? 'No Name',
+                                price: (product2['price'] as num).toDouble() ?? 0.0,
+                                rating: (product2['rating'] as num).toDouble() ?? 0.0,
                                 isFavorite: product2['isFavorite'] ?? false,
-                                description: product2['description'],
+                                description: product2['description'] ?? '',
+                                productId: product2['productId'] ?? '', // Ensure this matches the field in Firestore
 
                               ),
                             ),

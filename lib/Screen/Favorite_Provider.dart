@@ -1,17 +1,28 @@
-// import 'package:flutter/foundation.dart';
-//
-// class FavoriteProvider with ChangeNotifier {
-//   // Set of favorite item IDs
-//   final Set<String> _favorites = {};
-//
-//   bool isFavorite(String id) => _favorites.contains(id);
-//
-//   void toggleFavorite(String id) {
-//     if (_favorites.contains(id)) {
-//       _favorites.remove(id);
-//     } else {
-//       _favorites.add(id);
-//     }
-//     notifyListeners();
-//   }
-// }
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+class FavoritesProvider with ChangeNotifier {
+  final Set<String> _favoriteProducts = {};
+
+  // Getter for the favorites list
+  Set<String> get favorites => _favoriteProducts;
+
+  bool isFavorite(String productId) {
+    return _favoriteProducts.contains(productId);
+  }
+
+  void toggleFavorite(String productId) {
+    if (isFavorite(productId)) {
+      _favoriteProducts.remove(productId);
+      if (kDebugMode) {
+        print('Removed from favorites: $productId');
+      }
+    } else {
+      _favoriteProducts.add(productId);
+      if (kDebugMode) {
+        print('Added to favorites: $productId');
+      }
+    }
+    notifyListeners();
+  }
+}
