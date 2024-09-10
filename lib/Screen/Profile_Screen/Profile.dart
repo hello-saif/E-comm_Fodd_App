@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodiapp/Screen/SignIn_State/SiginUP_Screen.dart';
 import 'package:foodiapp/Screen/Wishlist/Wish_List.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -86,6 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.notifications_outlined,
                     text: 'Notification',
                     onTap: () {
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>SignIn()), (route) => false);
 
                     },
                     trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),

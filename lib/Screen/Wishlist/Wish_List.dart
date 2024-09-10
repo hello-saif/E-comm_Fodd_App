@@ -34,7 +34,14 @@ class _WishlistState extends State<Wishlist> {
           },
         ),
       ),
-      body: FutureBuilder<QuerySnapshot>(
+      body: favoriteProductIds.isEmpty
+          ? const Center(
+        child: Text(
+          'No product selected.',
+          style: TextStyle(fontSize: 18),
+        ),
+      )
+          : FutureBuilder<QuerySnapshot>(
         future: _firestore.collection('foodProducts').where('productId', whereIn: favoriteProductIds).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
