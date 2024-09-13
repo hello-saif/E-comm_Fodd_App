@@ -98,6 +98,9 @@ class _OrderScreen1State extends State<OrderScreen1> {
   Future<void> Login(String _name, _pass) async {
     try {
      final response = await http.post(Uri.parse('https://reqres.in/api/login'),
+          headers: {
+       'Content-type':'application/json'
+          },
           body: {
             'email': _name,
             'password': _pass

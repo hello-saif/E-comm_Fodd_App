@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:geolocator/geolocator.dart';
 import '../Categories/Categories_Screen.dart';
 import '../Categories/Categorystyle.dart';
 import '../Products_Items/Food_Product_Item.dart';
@@ -20,7 +20,43 @@ class Home_Page extends StatefulWidget {
 }
 
 class _Home_PageState extends State<Home_Page> {
+  String? _currentLocation;
   @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation(); // Fetch the current location on init
+  }
+  Future<void> _getCurrentLocation() async {
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!isLocationServiceEnabled) {
+      setState(() {
+        _currentLocation = "Location services are disabled.";
+      });
+      return;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+        setState(() {
+          _currentLocation = "Location permission denied.";
+        });
+        return;
+      }
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _currentLocation = "Lat: ${position.latitude}, Lon: ${position.longitude}";
+      });
+    } catch (e) {
+      setState(() {
+        _currentLocation = "Error getting location: ${e.toString()}";
+      });
+    }
+  }  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -42,11 +78,11 @@ class _Home_PageState extends State<Home_Page> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Location and Search
-              const Row(
+               Row(
                 children: [
                   Icon(Icons.location_on, color: Colors.red),
                   SizedBox(width: 4),
-                  Text("Dhaka, Bangladesh"),
+                  Text(  _currentLocation ??'Error Location',),
                 ],
               ),
               const SizedBox(height: 16),

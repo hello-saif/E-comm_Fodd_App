@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:foodiapp/BottomNavBar.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add Firebase Auth import
+import 'package:foodiapp/BottomNavBar.dart'; // Your home screen
+import 'package:foodiapp/Screen/SignIn_State/SiginUP_Screen.dart'; // Sign-in screen
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _fetchSplashScreenData();
-    _moveToNextScreen();
+    // No need to call _moveToNextScreen(), since navigation is now handled by StreamBuilder
   }
 
   Future<void> _fetchSplashScreenData() async {
@@ -47,15 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  Future<void> _moveToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 5));
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const BottomNavBar()),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,15 +63,15 @@ class _SplashScreenState extends State<SplashScreen> {
             )
           else
             const Center(
-                child:
-                    CircularProgressIndicator()), // Placeholder if image URL is not available
+              child: CircularProgressIndicator(),
+            ), // Placeholder if image URL is not available
 
           // Centered Logo and Version Text
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               Spacer(),
+                const Spacer(),
                 if (_logoUrl.isNotEmpty)
                   ClipOval(
                     child: Image.network(
@@ -97,9 +90,28 @@ class _SplashScreenState extends State<SplashScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 5,)
+                const SizedBox(height: 5),
               ],
             ),
+          ),
+
+          // StreamBuilder to handle auth state changes
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  // User is logged in, navigate to the home screen
+                  Future.microtask(() => Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => const BottomNavBar())));
+                } else {
+                  // User is not logged in, navigate to the sign-in screen
+                  Future.microtask(() => Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => const SignIn())));
+                }
+              }
+              return const SizedBox(); // Placeholder while checking the auth state
+            },
           ),
         ],
       ),
