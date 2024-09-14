@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodiapp/Screen/Profile_Screen/Profile.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../BottomNavBar.dart';
 import 'Phone_SignIn.dart';
@@ -22,64 +21,44 @@ class _SignInState extends State<SignIn> {
 
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
-      final GoogleSignInAccount? googleSignInAccount =
-      await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await GoogleSignIn(
+        scopes: ['email', 'profile'],  // Make sure to include these scopes
+      ).signIn();
+
       if (googleSignInAccount == null) {
         // User canceled the Google Sign-In flow
         return;
       }
-      final GoogleSignInAuthentication googleAuth =
-      await googleSignInAccount.authentication;
+
+      final GoogleSignInAuthentication googleAuth = await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential =
-      await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
         if (kDebugMode) {
-          if (kDebugMode) {
-            print('User ID: ${user.uid}');
-          }
-        }
-        if (kDebugMode) {
-          print('User Email: ${user.email}');
+          print('Display Name: ${user.displayName}');
+          print('Email: ${user.email}');
+          print('Photo URL: ${user.photoURL}');
         }
 
-        // Navigate to NavBar screen
+        // Navigate to NavBar screen or wherever you need
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) =>  BottomNavBar()),
+          MaterialPageRoute(builder: (context) => BottomNavBar()),
               (route) => false,
         );
       } else {
-        if (kDebugMode) {
-          print('Sign in failed: User is null');
-        }
+        print('Google sign-in failed: user is null');
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error signing in with Google: $e');
-      }
-      // Handle specific types of exceptions if needed
-      if (e is PlatformException) {
-        if (kDebugMode) {
-          print('PlatformException details: ${e.details}');
-        }
-        if (kDebugMode) {
-          print('PlatformException code: ${e.code}');
-        }
-        // Handle specific error codes if necessary
-        if (e.code == '10') {
-          // Handle ApiException: 10 here
-          if (kDebugMode) {
-            print('Google Sign-In API Error: ApiException 10');
-          }
-        }
       }
     }
   }

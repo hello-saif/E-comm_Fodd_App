@@ -64,13 +64,13 @@ class _MyProfileState extends State<MyProfile> {
                           : null,
                     ),
 
-                    Positioned(
+                    const Positioned(
                       bottom: 0,
                       right: 0,
                       child: CircleAvatar(
                         radius: 18,
                         backgroundColor: Colors.orange,
-                        child: const Icon(
+                        child: Icon(
                           Icons.add,
                           color: Colors.white,
                           size: 20,
