@@ -273,7 +273,7 @@ class _NextState extends State<Next> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Time: ${Data!['hourly']['time'][0]}'),
+                    Text('Time: ${Data!['hourly']['time']}'),
                     const SizedBox(height: 10),
                     Text(
                         'Temperature: ${Data!['hourly']['temperature_2m'][0]}°C'),
@@ -304,10 +304,7 @@ class _NextState extends State<Next> {
   Future<void> fetchWeatherData() async {
     try {
       final response = await http
-          .get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=52.'
-          '52&longitude=13.41&current=temperature_2m,wind_spee'
-          'd_10m&hourly=temperature_2m,relative_humidity_2m,wind_'
-          'speed_10m'));
+          .get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m'));
       if (response.statusCode == 200) {
         setState(() {
           Data = jsonDecode(response.body);
