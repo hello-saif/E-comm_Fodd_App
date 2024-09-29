@@ -11,6 +11,8 @@ class FoodProductItem extends StatelessWidget {
   final String description;
   final String productId;
   final bool isFavorite;
+  final String category; // Add the category field
+
 
   const FoodProductItem({
     super.key,
@@ -21,6 +23,8 @@ class FoodProductItem extends StatelessWidget {
     required this.description,
     required this.productId,
     this.isFavorite = false,
+    required this.category, // Add the category here
+
   });
 
   @override
@@ -118,6 +122,8 @@ class FoodProductItem extends StatelessWidget {
                         rating: rating,
                         description: description,
                         productId: productId,
+                        category: category, // Pass the category here
+
                       ),
                     ),
                   );

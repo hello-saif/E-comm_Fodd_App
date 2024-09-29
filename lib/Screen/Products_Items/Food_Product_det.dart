@@ -11,6 +11,7 @@ class ProductDetailPage extends StatefulWidget {
   final double rating;
   final String description;
   final String productId;
+  final String category; // Category field added
 
   const ProductDetailPage({
     super.key,
@@ -20,6 +21,7 @@ class ProductDetailPage extends StatefulWidget {
     required this.rating,
     required this.description,
     required this.productId,
+    required this.category, // Required category added
   });
 
   @override
@@ -140,12 +142,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     padding: const EdgeInsets.only(left: 0.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        widget.name,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5), // Spacing between name and category
+                          Text(
+                            'Category: ${widget.category}', // Display the category here
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey, // Different color for category
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:foodiapp/Screen/Dark_Mode_Provider.dart';
 import 'package:provider/provider.dart';
 import 'Screen/Favorite_Provider.dart';
 import 'Screen/Loader/Loader.dart';
-import 'Screen/Oder_Section/Order.dart';
 import 'Screen/Provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +12,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_)=>DarkThemeMode()),
         ChangeNotifierProvider(
           create: (context) => FavoritesProvider(),
         ),
@@ -30,11 +31,11 @@ class MaanFoodApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkthememode=Provider.of<DarkThemeMode>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-      ),
+      theme: darkthememode.Thememode ? ThemeData.dark():ThemeData.light(),
+
       home: const SplashScreen(),
     );
   }

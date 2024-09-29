@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../Categories/Categories_Screen.dart';
+import '../Categories/CategoryProductsScreen.dart';
 import '../Categories/Categorystyle.dart';
 import '../Products_Items/Food_Product_Item.dart';
 import '../Products_Items/Popular_Product_Screen.dart';
@@ -19,43 +20,8 @@ class Home_Page extends StatefulWidget {
 }
 
 class _Home_PageState extends State<Home_Page> {
-  // String? _currentLocation;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _getCurrentLocation(); // Fetch the current location on init
-  // }
-  // Future<void> _getCurrentLocation() async {
-  //   bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!isLocationServiceEnabled) {
-  //     setState(() {
-  //       _currentLocation = "Location services are disabled.";
-  //     });
-  //     return;
-  //   }
-  //
-  //   LocationPermission permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-  //       setState(() {
-  //         _currentLocation = "Location permission denied.";
-  //       });
-  //       return;
-  //     }
-  //   }
-  //
-  //   try {
-  //     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //     setState(() {
-  //       _currentLocation = "Lat: ${position.latitude}, Lon: ${position.longitude}";
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _currentLocation = "Error getting location: ${e.toString()}";
-  //     });
-  //   }
-  // }
+  String searchText = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,16 +44,21 @@ class _Home_PageState extends State<Home_Page> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Location and Search
-               Row(
-                children: [
+              Row(
+                children: const [
                   Icon(Icons.location_on, color: Colors.red),
                   SizedBox(width: 4),
-                  Text(  //_currentLocation ??
-                      'Error Location',),
+                  Text('Error Location'), // Placeholder for location
                 ],
               ),
               const SizedBox(height: 16),
+              // Search Field
               TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value.toLowerCase(); // Update the search text
+                  });
+                },
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
                   hintText: "Search...",
@@ -111,7 +82,6 @@ class _Home_PageState extends State<Home_Page> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
-
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(child: Text('No images found'));
                   }
@@ -180,8 +150,9 @@ class _Home_PageState extends State<Home_Page> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CategoriesScreen()),
+                        MaterialPageRoute(builder: (context) => AllCategory()),
                       );
+
                     },
                     child: const Text("See all", style: TextStyle(color: Colors.orange)),
                   ),
@@ -199,7 +170,6 @@ class _Home_PageState extends State<Home_Page> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
-
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(child: Text('No categories found'));
                   }
@@ -211,9 +181,20 @@ class _Home_PageState extends State<Home_Page> {
                       children: categories.map((category) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: CategoryItem(
-                            imageUrl: category['imageUrl'],
-                            label: category['name'],
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigate to a new screen when category is tapped
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryProducts(categoryName: category['name']),
+                                ),
+                              );
+                            },
+                            child: CategoryItem(
+                              imageUrl: category['imageUrl'],
+                              label: category['name'],
+                            ),
                           ),
                         );
                       }).toList(),
@@ -256,12 +237,28 @@ class _Home_PageState extends State<Home_Page> {
                   }
 
                   var foodProducts = snapshot.data!.docs;
-                  var limitedProducts = foodProducts.take(4).toList(); // Limit to first 4 products
+
+                  // Filter products based on search query
+                  var filteredProducts = foodProducts.where((doc) {
+                    var productName = doc['name']?.toString().toLowerCase() ?? '';
+                    return productName.contains(searchText);
+                  }).toList();
+
+                  // If no search, limit to 4 products
+                  if (searchText.isEmpty) {
+                    filteredProducts = filteredProducts.take(4).toList();
+                  }
+
+                  if (filteredProducts.isEmpty) {
+                    return const Center(child: Text('No products match your search'));
+                  }
 
                   List<Widget> productRows = [];
-                  for (int i = 0; i < limitedProducts.length; i += 2) {
-                    var product1 = limitedProducts[i].data() as Map<String, dynamic>;
-                    var product2 = i + 1 < limitedProducts.length ? limitedProducts[i + 1].data() as Map<String, dynamic> : null;
+                  for (int i = 0; i < filteredProducts.length; i += 2) {
+                    var product1 = filteredProducts[i].data() as Map<String, dynamic>;
+                    var product2 = i + 1 < filteredProducts.length
+                        ? filteredProducts[i + 1].data() as Map<String, dynamic>
+                        : null;
 
                     productRows.add(
                       Row(
@@ -275,7 +272,8 @@ class _Home_PageState extends State<Home_Page> {
                               rating: (product1['rating'] as num).toDouble() ?? 0.0,
                               isFavorite: product1['isFavorite'] ?? false,
                               description: product1['description'] ?? '',
-                              productId: product1['productId'] ?? '', // Ensure this matches the field in Firestore
+                              productId: product1['productId'] ?? '',
+                              category: product1['category'] ?? 'Unknown Category', // Added category
 
                             ),
                           ),
@@ -289,7 +287,8 @@ class _Home_PageState extends State<Home_Page> {
                                 rating: (product2['rating'] as num).toDouble() ?? 0.0,
                                 isFavorite: product2['isFavorite'] ?? false,
                                 description: product2['description'] ?? '',
-                                productId: product2['productId'] ?? '', // Ensure this matches the field in Firestore
+                                productId: product2['productId'] ?? '',
+                                category: product1['category'] ?? 'Unknown Category', // Added category
 
                               ),
                             ),
@@ -313,3 +312,4 @@ class _Home_PageState extends State<Home_Page> {
     );
   }
 }
+

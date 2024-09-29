@@ -17,7 +17,6 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
@@ -50,7 +49,7 @@ class _SignInState extends State<SignIn> {
         // Navigate to NavBar screen or wherever you need
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => BottomNavBar()),
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
               (route) => false,
         );
       } else {

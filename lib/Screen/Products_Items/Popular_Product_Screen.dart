@@ -56,7 +56,8 @@ class PopularProductsScreen extends StatelessWidget {
                       rating: (product1['rating'] as num).toDouble() ?? 0.0,
                       isFavorite: product1['isFavorite'] ?? false,
                       description: product1['description'] ?? '',
-                      productId: product1['productId'] ?? '', // Ensure this matches the field in Firestore
+                      productId: product1['productId'] ?? '',
+                      category: product1['category'] ?? 'Unknown Category', // Added category
                     ),
                   ),
                   const SizedBox(width: 8.0),
@@ -69,7 +70,9 @@ class PopularProductsScreen extends StatelessWidget {
                         rating: (product2['rating'] as num).toDouble() ?? 0.0,
                         isFavorite: product2['isFavorite'] ?? false,
                         description: product2['description'] ?? '',
-                        productId: product2['productId'] ?? '', // Ensure this matches the field in Firestore
+                        productId: product2['productId'] ?? '',
+                        category: product2['category'] ?? 'Unknown Category', // Added category
+// Ensure this matches the field in Firestore
                       ),
                     ),
                 ],

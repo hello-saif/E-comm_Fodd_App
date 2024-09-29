@@ -18,15 +18,14 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            onPressed: () {},
-          ),
-          title: const Text('Test'),
-          actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))],
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {},
         ),
+        title: const Text('Test'),
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))],
+      ),
     );
   }
-
 }

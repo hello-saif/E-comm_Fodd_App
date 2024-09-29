@@ -31,9 +31,9 @@ class CategoryItem extends StatelessWidget {
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
-          textAlign: TextAlign.center, // Center align the text
-          maxLines: 2, // Allow up to 2 lines
-          overflow: TextOverflow.ellipsis, // Add ellipsis if the text is too long
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

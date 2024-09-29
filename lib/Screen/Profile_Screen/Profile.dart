@@ -1,140 +1,170 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodiapp/Screen/Dark_Mode_Provider.dart';
 import 'package:foodiapp/Screen/Wishlist/Wish_List.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../../BottomNavBar.dart';
 import '../SignIn_State/SiginUP_Screen.dart';
 import 'MyProfile.dart';
+import 'Profile.dart';
 
 class ProfileScreen extends StatefulWidget {
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
-
 class _ProfileScreenState extends State<ProfileScreen> {
-  final Color _selectedColor = Colors.orange.shade50; // Default color
+  final Color _selectedColor = Colors.orange.shade50;
 
   Future<User?> _getCurrentUser() async {
     return FirebaseAuth.instance.currentUser;
   }
+
   @override
   Widget build(BuildContext context) {
+    final darkthememode = Provider.of<DarkThemeMode>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text('Profile'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              darkthememode.Chnagetheme();
+            },
+            icon: Icon(Icons.dark_mode),
+          ),
+        ],
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Column(
+      body: FutureBuilder<User?>(
+        future: _getCurrentUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasData && snapshot.data != null) {
+            User user = snapshot.data!;
+            return Column(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                      'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp'),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                 'No Name',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: user.photoURL != null
+                            ? NetworkImage(user.photoURL!)
+                            : null,
+                        child: user.photoURL == null
+                            ? const Icon(Icons.person)
+                            : null,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                       user.displayName.toString(),
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        user.uid ?? 'No Email',  // Provide a fallback if email is null
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  'No Email',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
+                // The rest of your profile screen remains unchanged
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade100,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40),
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: ListView(
+                      children: [
+                        ProfileMenuItem(
+                          icon: Icons.person_outline_sharp,
+                          text: 'My Profile',
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => MyProfile()),
+                                    (route) => false);
+                          },
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          backgroundColor: _selectedColor,
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileMenuItem(
+                          icon: Icons.payment,
+                          text: 'Payment Setting',
+                          onTap: () {},
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          backgroundColor: _selectedColor,
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileMenuItem(
+                          icon: Icons.notifications_outlined,
+                          text: 'Notification',
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignIn()),
+                                    (route) => false);
+                          },
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          backgroundColor: _selectedColor,
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileMenuItem(
+                          icon: Icons.favorite_border,
+                          text: 'Wishlist',
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => Wishlist()),
+                                    (route) => false);
+                          },
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          backgroundColor: _selectedColor,
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileMenuItem(
+                          icon: Icons.local_shipping_outlined,
+                          text: 'Order Tracking',
+                          onTap: () {},
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          backgroundColor: _selectedColor,
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileMenuItem(
+                          icon: Icons.logout,
+                          text: 'Log Out',
+                          onTap: () {
+                            _signOut(context);
+                          },
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                          backgroundColor: _selectedColor,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 ),
               ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.orange.shade100, // Set the background color
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(40), // Rounded corner on the top-left
-                  topRight: Radius.circular(40), // Rounded corner on the top-right
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: ListView(
-                children: [
-                  const SizedBox(height: 16),
-                  ProfileMenuItem(
-                    icon: Icons.person_outline_sharp,
-                    text: 'My Profile',
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyProfile()),
-                              (route) => false);
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    backgroundColor: _selectedColor, // Change color on tap
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileMenuItem(
-                    icon: Icons.payment,
-                    text: 'Payment Setting',
-                    onTap: () {},
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    backgroundColor: _selectedColor, // Change color on tap
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileMenuItem(
-                    icon: Icons.notifications_outlined,
-                    text: 'Notification',
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignIn()),
-                              (route) => false);
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    backgroundColor: _selectedColor, // Change color on tap
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileMenuItem(
-                    icon: Icons.favorite_border,
-                    text: 'Wishlist',
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => Wishlist()),
-                              (route) => false);
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    backgroundColor: _selectedColor, // Change color on tap
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileMenuItem(
-                    icon: Icons.local_shipping_outlined,
-                    text: 'Order Tracking',
-                    onTap: () {},
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    backgroundColor: _selectedColor, // Change color on tap
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileMenuItem(
-                    icon: Icons.logout,
-                    text: 'Log Out',
-                    onTap: () {
-                      _signOut(context);
-                    },
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                    backgroundColor: _selectedColor, // Change color on tap
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-          ),
-        ],
+            );
+          } else {
+            return Center(child: Text('No user is signed in.'));
+          }
+        },
       ),
     );
   }
@@ -143,9 +173,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       await FirebaseAuth.instance.signOut();
       Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
-              (route) => false); // Navigate to the login screen after sign-out
+        context,
+        MaterialPageRoute(builder: (context) => const BottomNavBar()),
+            (route) => false,
+      );
     } catch (e) {
       print('Error signing out: $e');
       ScaffoldMessenger.of(context).showSnackBar(

@@ -13,6 +13,7 @@ class Info extends StatefulWidget {
 class _InfoState extends State<Info> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String phoneNumber='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(

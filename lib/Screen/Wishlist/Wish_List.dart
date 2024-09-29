@@ -73,7 +73,9 @@ class _WishlistState extends State<Wishlist> {
                       rating: (product1['rating'] as num).toDouble() ?? 0.0,
                       description: product1['description'] ?? '',
                       productId: product1['productId'] ?? '',
-                      isFavorite: true, // This is optional as `isFavorite` is managed in the provider.
+                      isFavorite: true,
+                      category: product1['category'] ?? 'Unknown Category', // Added category
+// This is optional as `isFavorite` is managed in the provider.
                     ),
                   ),
                   const SizedBox(width: 8.0),
@@ -86,7 +88,9 @@ class _WishlistState extends State<Wishlist> {
                         rating: (product2['rating'] as num).toDouble() ?? 0.0,
                         description: product2['description'] ?? '',
                         productId: product2['productId'] ?? '',
-                        isFavorite: true, // This is optional as `isFavorite` is managed in the provider.
+                        isFavorite: true,
+                        category: product2['category'] ?? 'Unknown Category', // Added category
+// This is optional as `isFavorite` is managed in the provider.
                       ),
                     ),
                 ],
