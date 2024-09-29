@@ -20,16 +20,6 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart Page'),
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        //   onPressed: () {
-        //     Navigator.pushAndRemoveUntil(
-        //       context,
-        //       MaterialPageRoute(builder: (context) => const BottomNavBar()),
-        //           (route) => false,
-        //     );
-        //   },
-        // ),
       ),
       body: Column(
         children: [
@@ -126,13 +116,15 @@ class CartPage extends StatelessWidget {
               width: double.infinity, // Makes the button take the full width of the container
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CheckoutPage(totalAmount: totalCost),
-                    ),
-                        (route) => false,
-                  );
+                  cartProvider.checkout(); // Clear the cart and move items to order
+
+                  // Navigator.pushAndRemoveUntil(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => CheckoutPage(totalAmount: totalCost),
+                  //   ),
+                  //       (route) => false,
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,

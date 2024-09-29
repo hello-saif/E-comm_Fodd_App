@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodiapp/Screen/Profile_Screen/Profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../BottomNavBar.dart';
+import 'AdminLoginScreen.dart';
 import 'Phone_SignIn.dart';
 
 class SignIn extends StatefulWidget {
@@ -21,7 +22,7 @@ class _SignInState extends State<SignIn> {
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleSignInAccount = await GoogleSignIn(
-        scopes: ['email', 'profile'],  // Make sure to include these scopes
+        scopes: ['email', 'profile'], // Make sure to include these scopes
       ).signIn();
 
       if (googleSignInAccount == null) {
@@ -40,18 +41,14 @@ class _SignInState extends State<SignIn> {
       final User? user = userCredential.user;
 
       if (user != null) {
-        if (kDebugMode) {
-          print('Display Name: ${user.displayName}');
-          print('Email: ${user.email}');
-          print('Photo URL: ${user.photoURL}');
-        }
-
         // Navigate to NavBar screen or wherever you need
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const BottomNavBar()),
               (route) => false,
         );
+
+        // Optionally, store user role in Firestore here...
       } else {
         print('Google sign-in failed: user is null');
       }
@@ -62,20 +59,16 @@ class _SignInState extends State<SignIn> {
     }
   }
 
+  Future<void> _adminSignIn(BuildContext context) async {
+    // Implement admin sign-in logic here
+    // For example, you could navigate to an admin login screen
+    // or perform specific sign-in actions
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AdminLoginScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const BottomNavBar()),
-                    (route) => false);
-          },
-        ),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -173,6 +166,17 @@ class _SignInState extends State<SignIn> {
                       style: TextStyle(color: Colors.black),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 15),
+              // Add Admin Login Button
+              TextButton(
+                onPressed: () {
+                  _adminSignIn(context);
+                },
+                child: const Text(
+                  'Admin Login',
+                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ),
               const SizedBox(height: 50),

@@ -56,7 +56,8 @@ class _Home_PageState extends State<Home_Page> {
               TextField(
                 onChanged: (value) {
                   setState(() {
-                    searchText = value.toLowerCase(); // Update the search text
+                    searchText = value.toLowerCase();// Update the search text
+
                   });
                 },
                 decoration: InputDecoration(
@@ -68,7 +69,9 @@ class _Home_PageState extends State<Home_Page> {
                   ),
                   filled: true,
                   fillColor: Colors.grey[200],
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0), // Adjust padding here
                 ),
+
               ),
               const SizedBox(height: 24),
 
@@ -277,7 +280,7 @@ class _Home_PageState extends State<Home_Page> {
 
                             ),
                           ),
-                          const SizedBox(width: 8.0),
+                          const SizedBox(width: 14.0),
                           if (product2 != null)
                             Expanded(
                               child: FoodProductItem(

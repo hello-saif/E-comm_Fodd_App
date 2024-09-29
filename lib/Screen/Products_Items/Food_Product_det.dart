@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Cart_Screen/Cart_model.dart';
@@ -38,12 +39,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final isFavorite = favoritesProvider.isFavorite(widget.productId);
 
     void addToCart() {
+
       cartProvider.addToCart(
         CartItem(
           imageUrl: widget.imageUrl,
           name: widget.name,
           price: widget.price,
           quantity: _counter,
+          status: 'Pending',
         ),
       );
 

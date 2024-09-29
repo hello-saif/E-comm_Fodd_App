@@ -80,7 +80,8 @@ class FoodProductItem extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
           Text(
-            name,
+            name,maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4.0),

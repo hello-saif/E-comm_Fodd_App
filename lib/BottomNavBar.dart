@@ -18,7 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _screens = [
 
     Home_Page(firestore: FirebaseFirestore.instance),
-    const OrderScreen(),
+     OrderScreen(),
      CartPage(),
      const OfferScreen(),
      ProfileScreen(),
