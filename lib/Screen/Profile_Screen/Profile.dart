@@ -10,10 +10,10 @@ import 'MyProfile.dart';
 import 'Profile.dart';
 
 class ProfileScreen extends StatefulWidget {
-
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
+
 class _ProfileScreenState extends State<ProfileScreen> {
   final Color _selectedColor = Colors.orange.shade50;
 
@@ -43,120 +43,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData && snapshot.data != null) {
             User user = snapshot.data!;
-            return Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: user.photoURL != null
-                            ? NetworkImage(user.photoURL!)
-                            : null,
-                        child: user.photoURL == null
-                            ? const Icon(Icons.person)
-                            : null,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                       user.displayName.toString(),
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        user.uid ?? 'No Email',  // Provide a fallback if email is null
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // The rest of your profile screen remains unchanged
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade100,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
+            return SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: user.photoURL != null
+                                ? NetworkImage(user.photoURL!)
+                                : null,
+                            child: user.photoURL == null
+                                ? const Icon(Icons.person)
+                                : null,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            user.displayName.toString(),
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            user.uid ?? 'No Email',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    padding: const EdgeInsets.all(16),
-                    child: ListView(
-                      children: [
-                        ProfileMenuItem(
-                          icon: Icons.person_outline_sharp,
-                          text: 'My Profile',
-                          onTap: () {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(builder: (context) => MyProfile()),
-                                    (route) => false);
-                          },
-                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                          backgroundColor: _selectedColor,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileMenuItem(
-                          icon: Icons.payment,
-                          text: 'Payment Setting',
-                          onTap: () {},
-                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                          backgroundColor: _selectedColor,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileMenuItem(
-                          icon: Icons.notifications_outlined,
-                          text: 'Notification',
-                          onTap: () {
-
-                          },
-                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                          backgroundColor: _selectedColor,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileMenuItem(
-                          icon: Icons.favorite_border,
-                          text: 'Wishlist',
-                          onTap: () {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(builder: (context) => Wishlist()),
-                                    (route) => false);
-                          },
-                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                          backgroundColor: _selectedColor,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileMenuItem(
-                          icon: Icons.local_shipping_outlined,
-                          text: 'Order Tracking',
-                          onTap: () {},
-                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                          backgroundColor: _selectedColor,
-                        ),
-                        const SizedBox(height: 16),
-                        ProfileMenuItem(
-                          icon: Icons.logout,
-                          text: 'Log Out',
-                          onTap: () {
-                            _signOut(context);
-                          },
-                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-                          backgroundColor: _selectedColor,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                    const SizedBox(height: 30),
+                    // Menu Items
+                    ProfileMenuItem(
+                      icon: Icons.person_outline_sharp,
+                      text: 'My Profile',
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyProfile()),
+                              (route) => false,
+                        );
+                      },
+                      backgroundColor: _selectedColor,
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    ProfileMenuItem(
+                      icon: Icons.payment,
+                      text: 'Payment Setting',
+                      onTap: () {},
+                      backgroundColor: _selectedColor,
+                    ),
+                    const SizedBox(height: 16),
+                    ProfileMenuItem(
+                      icon: Icons.notifications_outlined,
+                      text: 'Notification',
+                      onTap: () {},
+                      backgroundColor: _selectedColor,
+                    ),
+                    const SizedBox(height: 16),
+                    ProfileMenuItem(
+                      icon: Icons.favorite_border,
+                      text: 'Wishlist',
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => Wishlist()),
+                              (route) => false,
+                        );
+                      },
+                      backgroundColor: _selectedColor,
+                    ),
+                    const SizedBox(height: 16),
+                    ProfileMenuItem(
+                      icon: Icons.local_shipping_outlined,
+                      text: 'Order Tracking',
+                      onTap: () {},
+                      backgroundColor: _selectedColor,
+                    ),
+                    const SizedBox(height: 16),
+                    ProfileMenuItem(
+                      icon: Icons.logout,
+                      text: 'Log Out',
+                      onTap: () {
+                        _signOut(context);
+                      },
+                      backgroundColor: _selectedColor,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-              ],
+              ),
             );
           } else {
             return Center(child: Text('No user is signed in.'));
@@ -171,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await FirebaseAuth.instance.signOut();
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        MaterialPageRoute(builder: (context) => const SignIn()),
             (route) => false,
       );
     } catch (e) {
@@ -189,15 +173,13 @@ class ProfileMenuItem extends StatelessWidget {
   final IconData? icon;
   final String text;
   final VoidCallback onTap;
-  final Color backgroundColor; // Background color
-  final Widget? trailing;
+  final Color backgroundColor;
 
   ProfileMenuItem({
     this.icon,
     required this.text,
     required this.onTap,
-    this.backgroundColor = Colors.white, // Default background color
-    this.trailing,
+    this.backgroundColor = Colors.white,
   });
 
   @override
@@ -206,13 +188,24 @@ class ProfileMenuItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: backgroundColor, // Set the background color here
-          borderRadius: BorderRadius.circular(40), // Rounded corners
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(40),
         ),
-        child: ListTile(
-          leading: icon != null ? Icon(icon, color: Colors.orangeAccent) : null,
-          title: Text(text),
-          trailing: trailing != null ? trailing : null,
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.orangeAccent),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.grey),
+          ],
         ),
       ),
     );

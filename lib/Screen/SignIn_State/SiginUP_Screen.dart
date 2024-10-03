@@ -59,12 +59,7 @@ class _SignInState extends State<SignIn> {
     }
   }
 
-  Future<void> _adminSignIn(BuildContext context) async {
-    // Implement admin sign-in logic here
-    // For example, you could navigate to an admin login screen
-    // or perform specific sign-in actions
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AdminLoginScreen()));
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -166,17 +161,6 @@ class _SignInState extends State<SignIn> {
                       style: TextStyle(color: Colors.black),
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 15),
-              // Add Admin Login Button
-              TextButton(
-                onPressed: () {
-                  _adminSignIn(context);
-                },
-                child: const Text(
-                  'Admin Login',
-                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ),
               const SizedBox(height: 50),

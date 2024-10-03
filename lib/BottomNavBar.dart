@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodiapp/Screen/Offer_Screen/Offer.dart';
@@ -7,7 +9,9 @@ import 'Screen/Home/HomePage.dart';
 import 'Screen/Oder_Section/Order.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  const BottomNavBar({
+    super.key,
+  });
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -16,16 +20,12 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
-
     Home_Page(firestore: FirebaseFirestore.instance),
-     OrderScreen(),
-     CartPage(),
-     const OfferScreen(),
-     ProfileScreen(),
-
+    OrderScreen(),
+    CartPage(),
+    const OfferScreen(),
+    ProfileScreen(),
   ];
-
-
 
   void _onBottomNavBarTapped(int index) {
     setState(() {
@@ -69,4 +69,3 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   }
 }
-

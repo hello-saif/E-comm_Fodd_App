@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../Cart_Screen/Cart_model.dart';
 import '../Provider.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -14,12 +14,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<CartProvider>(context); // Get the cart provider
-
-    // Filter orders based on the selected status
-    List<CartItem> filteredOrders = orderProvider.orderItems.where((order) {
-      if (selectedStatus == 'All Orders') return true; // Show all orders
-      return order.status == selectedStatus; // Filter by status
-    }).toList();
+    final currentUserId = orderProvider.currentUserId; // Get the current user ID
 
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +24,7 @@ class _OrderScreenState extends State<OrderScreen> {
         children: [
           // Horizontal tab bar for order statuses
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
             color: Colors.white,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -43,31 +38,64 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
             ),
           ),
-          // List of Orders
+          // List of Orders (real-time updates from Firestore)
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: filteredOrders.isNotEmpty
-                  ? filteredOrders.map((order) {
-                return _buildOrderItem(
-                  imageUrl: order.imageUrl,
-                  title: order.name,
-                  price: 'Price: ${order.price}৳', // Display price as currency
-                  status: order.status, // Use the actual status from order
-                  statusColor: _getStatusColor(order.status),
-                  quantity:'Quantity: ${order.quantity}', // Get color based on status
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('orders')
+                  .where('userId', isEqualTo: currentUserId) // Filter by current user ID
+                  .snapshots(), // Real-time listener for 'orders' collection
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator()); // Show loader while waiting
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text('No orders yet.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  );
+                }
+
+                // Get orders from Firestore and filter based on selectedStatus
+                List<QueryDocumentSnapshot> orders = snapshot.data!.docs;
+
+                List<QueryDocumentSnapshot> filteredOrders = orders.where((order) {
+                  Map<String, dynamic>? data = order.data() as Map<String, dynamic>?;
+
+                  // Safely check if the 'status' key exists in the data
+                  if (data != null && data.containsKey('status')) {
+                    String status = data['status']; // Fetch status from Firebase data
+                    if (selectedStatus == 'All Orders') return true;
+                    return status == selectedStatus;
+                  }
+                  return false; // If no 'status' key, exclude the order
+                }).toList();
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: filteredOrders.length,
+                  itemBuilder: (context, index) {
+                    final order = filteredOrders[index];
+                    final data = order.data() as Map<String, dynamic>;
+
+                    // Calculate total price based on price and quantity
+                    double price = data['price'] ?? 0.0; // Ensure price is fetched correctly
+                    int quantity = data['quantity'] ?? 0; // Ensure quantity is fetched correctly
+                    double totalPrice = price * quantity; // Calculate total price
+
+                    return _buildOrderItem(
+                      imageUrl: data['imageUrl'] ?? '', // Provide a default empty string if 'imageUrl' is missing
+                      title: data['name'] ?? 'Unknown', // Default name
+                      price: 'Price: ${totalPrice.toStringAsFixed(0)}৳', // Updated total price display
+                      status: data['status'] ?? 'Unknown', // Default to 'Unknown' if 'status' is missing
+                      statusColor: _getStatusColor(data['status'] ?? 'Unknown'),
+                      quantity: 'Quantity: ${quantity}', // Default quantity to 0
+                    );
+                  },
                 );
-              }).toList()
-                  : [
-                const Center(
-                  child: Text(
-                    'No orders yet.',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                ),
-              ],
+              },
             ),
-          ),
+          )
         ],
       ),
     );
@@ -85,7 +113,7 @@ class _OrderScreenState extends State<OrderScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
         margin: const EdgeInsets.only(right: 8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(28.0),
           color: selectedStatus == title ? Colors.orange : Colors.grey, // Change color for active tab
         ),
         child: Text(
@@ -102,7 +130,7 @@ class _OrderScreenState extends State<OrderScreen> {
       case 'Pending':
         return Colors.orange;
       case 'Processing':
-        return Colors.yellow;
+        return Colors.indigoAccent;
       case 'Delivered':
         return Colors.green;
       default:
@@ -110,7 +138,7 @@ class _OrderScreenState extends State<OrderScreen> {
     }
   }
 
-  // Sample _buildOrderItem method to display each order item
+  // Method to build each order item
   Widget _buildOrderItem({
     required String imageUrl,
     required String title,
@@ -151,7 +179,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0), // Add padding for better appearance
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                     decoration: BoxDecoration(
                       color: statusColor.withOpacity(0.2), // Lighten the status color for background
                       borderRadius: BorderRadius.circular(4.0), // Optional: Rounded corners

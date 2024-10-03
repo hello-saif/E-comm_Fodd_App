@@ -11,12 +11,6 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
 
-    // Calculate total cost
-    double totalCost = cartProvider.cartItems.fold(
-      0.0,
-          (sum, item) => sum + (item.price * item.quantity),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart Page'),
@@ -50,10 +44,12 @@ class CartPage extends StatelessWidget {
                           children: [
                             Text(
                               item.name,
+                              maxLines: 1,
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
+                            // Display price multiplied by quantity here
                             Text(
-                              '${item.price.toStringAsFixed(0)}৳',
+                              '${(item.price * item.quantity).toStringAsFixed(0)}৳', // Corrected here
                               style: const TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                             Text(
@@ -103,9 +99,19 @@ class CartPage extends StatelessWidget {
                   'Total:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  '${totalCost.toStringAsFixed(0)}৳',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange),
+                Consumer<CartProvider>(
+                  builder: (context, cartProvider, child) {
+                    // Recalculate total cost whenever the cart changes
+                    double totalCost = cartProvider.cartItems.fold(
+                      0.0,
+                          (sum, item) => sum + (item.price * item.quantity),
+                    );
+
+                    return Text(
+                      '${totalCost.toStringAsFixed(0)}৳',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange),
+                    );
+                  },
                 ),
               ],
             ),
@@ -113,33 +119,34 @@ class CartPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
-              width: double.infinity, // Makes the button take the full width of the container
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  cartProvider.checkout(); // Clear the cart and move items to order
-
+                  // Checkout function call
+                  Provider.of<CartProvider>(context, listen: false).placeOrder();
+                  // Navigate to CheckoutPage after successful checkout
+                  // Uncomment the following code to navigate
                   // Navigator.pushAndRemoveUntil(
                   //   context,
                   //   MaterialPageRoute(
                   //     builder: (context) => CheckoutPage(totalAmount: totalCost),
                   //   ),
-                  //       (route) => false,
+                  //   (route) => false, // This option will remove previous screens
                   // );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(vertical: 20), // Increase vertical padding
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Slightly larger border radius
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   textStyle: const TextStyle(
-                    fontSize: 20, // Larger font size
-                    fontWeight: FontWeight.bold, // Make text bold
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 child: const Text('Checkout'),
               ),
-
             ),
           ),
         ],

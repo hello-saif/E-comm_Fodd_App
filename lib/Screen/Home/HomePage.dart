@@ -52,12 +52,12 @@ class _Home_PageState extends State<Home_Page> {
                 ],
               ),
               const SizedBox(height: 16),
+
               // Search Field
               TextField(
                 onChanged: (value) {
                   setState(() {
-                    searchText = value.toLowerCase();// Update the search text
-
+                    searchText = value.toLowerCase(); // Update the search text
                   });
                 },
                 decoration: InputDecoration(
@@ -71,7 +71,6 @@ class _Home_PageState extends State<Home_Page> {
                   fillColor: Colors.grey[200],
                   contentPadding: const EdgeInsets.symmetric(vertical: 10.0), // Adjust padding here
                 ),
-
               ),
               const SizedBox(height: 24),
 
@@ -155,7 +154,6 @@ class _Home_PageState extends State<Home_Page> {
                         context,
                         MaterialPageRoute(builder: (context) => AllCategory()),
                       );
-
                     },
                     child: const Text("See all", style: TextStyle(color: Colors.orange)),
                   ),
@@ -163,7 +161,7 @@ class _Home_PageState extends State<Home_Page> {
               ),
               const SizedBox(height: 16),
 
-              // Fetching category data from Firestore
+              // Fetching category data from Firestore with search filter applied
               StreamBuilder(
                 stream: widget._firestore.collection('categories').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -178,10 +176,21 @@ class _Home_PageState extends State<Home_Page> {
                   }
 
                   var categories = snapshot.data!.docs;
+
+                  // Filter categories based on search query
+                  var filteredCategories = categories.where((doc) {
+                    var categoryName = doc['name']?.toString().toLowerCase() ?? '';
+                    return categoryName.contains(searchText);
+                  }).toList();
+
+                  if (filteredCategories.isEmpty) {
+                    return const Center(child: Text('No categories match your search'));
+                  }
+
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: categories.map((category) {
+                      children: filteredCategories.map((category) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: GestureDetector(
@@ -225,7 +234,7 @@ class _Home_PageState extends State<Home_Page> {
               ),
               const SizedBox(height: 16),
 
-              // Food Products List fetched from Firebase
+              // Food Products List fetched from Firebase with search filter applied
               StreamBuilder(
                 stream: widget._firestore.collection('foodProducts').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -277,10 +286,9 @@ class _Home_PageState extends State<Home_Page> {
                               description: product1['description'] ?? '',
                               productId: product1['productId'] ?? '',
                               category: product1['category'] ?? 'Unknown Category', // Added category
-
                             ),
                           ),
-                          const SizedBox(width: 14.0),
+                          const SizedBox(width: 16),
                           if (product2 != null)
                             Expanded(
                               child: FoodProductItem(
@@ -292,20 +300,16 @@ class _Home_PageState extends State<Home_Page> {
                                 description: product2['description'] ?? '',
                                 productId: product2['productId'] ?? '',
                                 category: product1['category'] ?? 'Unknown Category', // Added category
-
                               ),
-                            ),
+                            )
+                          else
+                            const Spacer(),
                         ],
                       ),
                     );
                   }
 
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: productRows,
-                    ),
-                  );
+                  return Column(children: productRows);
                 },
               ),
             ],
@@ -315,4 +319,3 @@ class _Home_PageState extends State<Home_Page> {
     );
   }
 }
-
