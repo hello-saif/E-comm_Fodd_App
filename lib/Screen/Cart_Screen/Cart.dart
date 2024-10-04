@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:foodiapp/BottomNavBar.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-
-import '../Payment/Cart_Page.dart';
 import '../Provider.dart'; // Import your provider
 
 class CartPage extends StatelessWidget {
@@ -19,8 +17,17 @@ class CartPage extends StatelessWidget {
         children: [
           Expanded(
             child: cartProvider.cartItems.isEmpty
-                ? const Center(
-              child: Text('Your cart is empty'),
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Add the Lottie animation here
+                Lottie.asset('animations/Animation.json', width: 250, height: 250),
+                const SizedBox(height: 20),
+                const Text(
+                  'Your cart is empty',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             )
                 : ListView.builder(
               itemCount: cartProvider.cartItems.length,
@@ -47,9 +54,8 @@ class CartPage extends StatelessWidget {
                               maxLines: 1,
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            // Display price multiplied by quantity here
                             Text(
-                              '${(item.price * item.quantity).toStringAsFixed(0)}৳', // Corrected here
+                              '${(item.price * item.quantity).toStringAsFixed(0)}৳',
                               style: const TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                             Text(
@@ -101,7 +107,6 @@ class CartPage extends StatelessWidget {
                 ),
                 Consumer<CartProvider>(
                   builder: (context, cartProvider, child) {
-                    // Recalculate total cost whenever the cart changes
                     double totalCost = cartProvider.cartItems.fold(
                       0.0,
                           (sum, item) => sum + (item.price * item.quantity),
@@ -122,16 +127,14 @@ class CartPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Checkout function call
                   Provider.of<CartProvider>(context, listen: false).placeOrder();
-                  // Navigate to CheckoutPage after successful checkout
                   // Uncomment the following code to navigate
                   // Navigator.pushAndRemoveUntil(
                   //   context,
                   //   MaterialPageRoute(
                   //     builder: (context) => CheckoutPage(totalAmount: totalCost),
                   //   ),
-                  //   (route) => false, // This option will remove previous screens
+                  //   (route) => false,
                   // );
                 },
                 style: ElevatedButton.styleFrom(

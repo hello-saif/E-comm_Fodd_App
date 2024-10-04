@@ -74,13 +74,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             user.uid ?? 'No Email',
                             style: const TextStyle(
                               fontSize: 16,
-                              color: Colors.black,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 60),
                     // Menu Items
                     ProfileMenuItem(
                       icon: Icons.person_outline_sharp,
@@ -200,7 +199,7 @@ class ProfileMenuItem extends StatelessWidget {
               child: Text(
                 text,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 18,color: Colors.black
                 ),
               ),
             ),

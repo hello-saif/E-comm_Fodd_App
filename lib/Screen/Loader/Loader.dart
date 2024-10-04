@@ -22,7 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _fetchSplashScreenData();
-    // No need to call _moveToNextScreen(), since navigation is now handled by StreamBuilder
+    // Add a 5-second delay before navigating to the next screen
+    Future.delayed(const Duration(seconds: 5), _moveToNextScreen);
   }
 
   Future<void> _fetchSplashScreenData() async {
@@ -47,6 +48,25 @@ class _SplashScreenState extends State<SplashScreen> {
         print('Error fetching splash screen data: $e');
       }
     }
+  }
+
+  void _moveToNextScreen() {
+    // Check if the user is authenticated and navigate accordingly
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        // User is logged in, navigate to the home screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        );
+      } else {
+        // User is not logged in, navigate to the sign-in screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SignIn()),
+        );
+      }
+    });
   }
 
   @override
@@ -93,25 +113,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 const SizedBox(height: 5),
               ],
             ),
-          ),
-
-          // StreamBuilder to handle auth state changes
-          StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                if (snapshot.hasData) {
-                  // User is logged in, navigate to the home screen
-                  Future.microtask(() => Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => const BottomNavBar())));
-                } else {
-                  // User is not logged in, navigate to the sign-in screen
-                  Future.microtask(() => Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => const SignIn())));
-                }
-              }
-              return const SizedBox(); // Placeholder while checking the auth state
-            },
           ),
         ],
       ),

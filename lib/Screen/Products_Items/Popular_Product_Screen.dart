@@ -16,11 +16,28 @@ class PopularProductsScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const BottomNavBar()),
-                  (route) => false,
-            ); // Go back to the previous screen
+            Navigator.of(context).pushAndRemoveUntil(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>  const BottomNavBar(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(0.0, 2.0); // Start from the right
+                  const end = Offset.zero; // End at the current position
+                  const curve = Curves.easeInOut; // Animation curve
+
+                  // Define the tween animation
+                  var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
+
+                  // Use SlideTransition to animate the child widget
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
+                  (route) => false, // Remove all previous routes
+            );
+
           },
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../../BottomNavBar.dart';
 import '../Favorite_Provider.dart';
@@ -26,19 +27,41 @@ class _WishlistState extends State<Wishlist> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const BottomNavBar()),
-                  (route) => false,
+            Navigator.of(context).pushAndRemoveUntil(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => const BottomNavBar(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(0.3, 0.0); // Start from the right
+                  const end = Offset.zero; // End at the current position
+                  const curve = Curves.easeInOut; // Animation curve
+
+                  // Define the tween animation
+                  var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
+
+                  // Use SlideTransition to animate the child widget
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
+                  (route) => false, // Remove all previous routes
             ); // Go back to the BottomNavBar
           },
         ),
       ),
       body: favoriteProductIds.isEmpty
-          ? const Center(
-        child: Text(
-          'No product selected.',
-          style: TextStyle(fontSize: 18),
+          ?  Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Lottie animation for empty orders
+            Lottie.asset('animations/Animation_wishlist.json', width: 250, height: 250),
+            const SizedBox(height: 20),
+            const Text('No Wishlist yet.',
+                style: TextStyle(fontSize: 18, color: Colors.grey)),
+          ],
         ),
       )
           : FutureBuilder<QuerySnapshot>(

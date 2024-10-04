@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../Provider.dart';
 
@@ -50,9 +51,17 @@ class _OrderScreenState extends State<OrderScreen> {
                   return const Center(child: CircularProgressIndicator()); // Show loader while waiting
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: Text('No orders yet.',
-                        style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  return  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Lottie animation for empty orders
+                        Lottie.asset('animations/Animation_order.json', width: 250, height: 250),
+                        SizedBox(height: 20),
+                        Text('No orders yet.',
+                            style: TextStyle(fontSize: 18, color: Colors.grey)),
+                      ],
+                    ),
                   );
                 }
 

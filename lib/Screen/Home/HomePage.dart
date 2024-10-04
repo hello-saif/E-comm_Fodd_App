@@ -223,10 +223,31 @@ class _Home_PageState extends State<Home_Page> {
                   const Text("Popular Products", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PopularProductsScreen()),
+                      Navigator.of(context).pushAndRemoveUntil(
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) =>  PopularProductsScreen(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(0.0, 0.1); // Start from the right
+                            const end = Offset.zero; // End at the current position
+                            const curve = Curves.easeInOut; // Animation curve
+
+                            // Define the tween animation
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
+
+                            // Use SlideTransition to animate the child widget
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                            (route) => false, // Remove all previous routes
                       );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => PopularProductsScreen()),
+                      // );
                     },
                     child: const Text("See all", style: TextStyle(color: Colors.orange)),
                   ),
