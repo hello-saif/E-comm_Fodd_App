@@ -30,14 +30,16 @@ class _SignInState extends State<SignIn> {
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleSignInAccount.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
@@ -45,7 +47,7 @@ class _SignInState extends State<SignIn> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const BottomNavBar()),
-              (route) => false,
+          (route) => false,
         );
 
         // Optionally, store user role in Firestore here...
@@ -58,8 +60,6 @@ class _SignInState extends State<SignIn> {
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +137,7 @@ class _SignInState extends State<SignIn> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const Phone()),
-                        (route) => false,
+                    (route) => false,
                   );
                 },
                 style: OutlinedButton.styleFrom(
@@ -162,6 +162,16 @@ class _SignInState extends State<SignIn> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 30),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => AdminLogin()),
+                      (route) => false);
+                },
+                child: Text('Admin Login'),
               ),
               const SizedBox(height: 50),
               const Text.rich(

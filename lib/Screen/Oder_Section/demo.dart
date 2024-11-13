@@ -246,10 +246,10 @@ class _NextState extends State<Next> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => BottomNavBar()),
-                    (route) => false);
+            // Navigator.pushAndRemoveUntil(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => BottomNavBar()),
+            //         (route) => false);
           },
         ),
       ),

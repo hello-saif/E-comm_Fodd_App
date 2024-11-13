@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            user.uid ?? 'No Email',
+                            user.uid,
                             style: const TextStyle(
                               fontSize: 16,
                             ),

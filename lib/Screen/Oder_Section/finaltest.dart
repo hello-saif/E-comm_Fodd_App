@@ -237,15 +237,15 @@ class _ProfileState extends State<Profile> {
     final counterprovider = Provider.of<CounterProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => BottomNavBar()),
-                    (route) => false);
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Navigator.pushAndRemoveUntil(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => BottomNavBar()),
+        //             (route) => false);
+        //   },
+        //   icon: Icon(Icons.arrow_back),
+        // ),
         title: Text(widget.email),
       ),
       body:

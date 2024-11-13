@@ -66,6 +66,7 @@ class CartProvider with ChangeNotifier {
           'price': order.price,
           'quantity': order.quantity,
           'status': 'Pending', // ডিফল্ট স্ট্যাটাস 'Pending'
+
         });
       }
 

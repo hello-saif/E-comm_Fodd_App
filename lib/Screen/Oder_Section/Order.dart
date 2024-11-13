@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../Provider.dart';
+import 'OrderDetails_Screen.dart';
 
 class OrderScreen extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 children: [
                   _buildTab("All Orders"),
                   _buildTab("Pending"),
+                  _buildTab("Confirmed"),
                   _buildTab("Processing"),
                   _buildTab("Delivered"),
                 ],
@@ -51,15 +53,14 @@ class _OrderScreenState extends State<OrderScreen> {
                   return const Center(child: CircularProgressIndicator()); // Show loader while waiting
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return  Center(
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Lottie animation for empty orders
                         Lottie.asset('animations/Animation_order.json', width: 250, height: 250),
-                        SizedBox(height: 20),
-                        Text('No orders yet.',
-                            style: TextStyle(fontSize: 18, color: Colors.grey)),
+                        const SizedBox(height: 20),
+                        const Text('No orders yet.', style: TextStyle(fontSize: 18, color: Colors.grey)),
                       ],
                     ),
                   );
@@ -92,6 +93,15 @@ class _OrderScreenState extends State<OrderScreen> {
                     int quantity = data['quantity'] ?? 0; // Ensure quantity is fetched correctly
                     double totalPrice = price * quantity; // Calculate total price
 
+                    // Get the order time and format it; fallback to 'Unknown' if missing
+                    Timestamp? orderTime = data['time']; // Get the order time
+                    String formattedTime;
+                    if (orderTime != null) {
+                      formattedTime = _formatTimestamp(orderTime); // Format the time if available
+                    } else {
+                      formattedTime = 'Unknown Time'; // Default message if no time is available
+                    }
+
                     return _buildOrderItem(
                       imageUrl: data['imageUrl'] ?? '', // Provide a default empty string if 'imageUrl' is missing
                       title: data['name'] ?? 'Unknown', // Default name
@@ -99,6 +109,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       status: data['status'] ?? 'Unknown', // Default to 'Unknown' if 'status' is missing
                       statusColor: _getStatusColor(data['status'] ?? 'Unknown'),
                       quantity: 'Quantity: ${quantity}', // Default quantity to 0
+                      time: formattedTime, // Pass formatted time to the item
                     );
                   },
                 );
@@ -138,6 +149,8 @@ class _OrderScreenState extends State<OrderScreen> {
     switch (status) {
       case 'Pending':
         return Colors.orange;
+      case 'Confirmed':
+        return Colors.lightGreen;
       case 'Processing':
         return Colors.indigoAccent;
       case 'Delivered':
@@ -145,6 +158,12 @@ class _OrderScreenState extends State<OrderScreen> {
       default:
         return Colors.grey;
     }
+  }
+
+  // Method to format timestamp to a readable string
+  String _formatTimestamp(Timestamp timestamp) {
+    DateTime date = timestamp.toDate(); // Convert to DateTime
+    return "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}"; // Format the date and time
   }
 
   // Method to build each order item
@@ -155,53 +174,78 @@ class _OrderScreenState extends State<OrderScreen> {
     required String status,
     required String quantity,
     required Color statusColor,
+    required String time, // Added time parameter
   }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Image.network(
-              imageUrl,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        // Navigate to OrderDetailScreen with order details
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderDetailScreen(
+              imageUrl: imageUrl,
+              title: title,
+              price: price,
+              status: status,
+              quantity: quantity,
+              time: time, // Pass time to the OrderDetailScreen
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    price,
-                    style: const TextStyle(fontSize: 14, color: Colors.green),
-                  ),
-                  Text(
-                    quantity,
-                    style: const TextStyle(fontSize: 14, color: Colors.green),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.2), // Lighten the status color for background
-                      borderRadius: BorderRadius.circular(4.0), // Optional: Rounded corners
-                    ),
-                    child: Text(
-                      status,
-                      style: TextStyle(fontSize: 14, color: statusColor),
-                    ),
-                  ),
-                ],
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Image.network(
+                imageUrl,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
               ),
-            ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      price,
+                      style: const TextStyle(fontSize: 14, color: Colors.green),
+                    ),
+                    Text(
+                      quantity,
+                      style: const TextStyle(fontSize: 14, color: Colors.green),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      time, // Display order time here
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.2), // Lighten the status color for background
+                        borderRadius: BorderRadius.circular(4.0), // Optional: Rounded corners
+                      ),
+                      child: Text(
+                        status,
+                        style: TextStyle(fontSize: 14, color: statusColor),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
