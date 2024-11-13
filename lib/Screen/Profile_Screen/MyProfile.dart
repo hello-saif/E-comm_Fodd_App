@@ -1,11 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:foodiapp/BottomNavBar.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 class MyProfile extends StatefulWidget {
@@ -16,17 +13,16 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
-  final TextEditingController _email =TextEditingController();
-  final TextEditingController _password=TextEditingController();
-  final GlobalKey<FormState> _formkey= GlobalKey<FormState>();
-
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.pushAndRemoveUntil(
                 context,
@@ -38,165 +34,226 @@ class _MyProfileState extends State<MyProfile> {
         actions: [IconButton(onPressed: () {}, icon: Icon(Icons.ice_skating))],
       ),
       body: Form(
-        key: _formkey,
-        child:Column(
+        key: _formKey,
+        child: Column(
           children: [
-            SizedBox(
-              height: 14,
-            ),
-            Center(
-              child: Text('Login Page'),
-            ),
-            SizedBox(
-              height: 14,
-            ),
+            const Text('Login Page', style: TextStyle(fontSize: 20)),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 controller: _email,
                 decoration: InputDecoration(
                     hintText: 'Email',
-                    labelText: 'Enter your email',
+                    labelText: ' Enter your Email',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-
-                    )
-                ),
+                    )),
               ),
             ),
-            SizedBox(height: 14,),
+            SizedBox(
+              height: 5,
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 controller: _password,
-                obscureText: true,
                 decoration: InputDecoration(
                     hintText: 'Password',
-                    labelText: 'Enter your password',
+                    labelText: ' Enter your Password',
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14)
-                    )
-                ),
+                      borderRadius: BorderRadius.circular(14),
+                    )),
               ),
             ),
-            SizedBox(
-              height: 14,
-            ),
-            ElevatedButton(onPressed: (){
-              if(_formkey.currentState!.validate()){
-                _Login(_email.text.toString(),_password.text.toString());
-
-              }
-
-            }, child: Text('Login'))
+            ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _login(_email.text.toString(), _password.text.toString());
+                  }
+                },
+                child: const Icon(Icons.login)),
+            TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Test1()),
+                          (route) => false);
+                },
+                child: const Text(
+                  'Register Now',
+                  style: TextStyle(color: Colors.red, fontSize: 15),
+                )),
           ],
         ),
-
-      )
+      ),
     );
   }
 
-  Future<void> _Login(   String _e,_p ,)async {
+  Future<void> _login(String _email, _password) async {
     final response = await http.post(Uri.parse('https://reqres.in/api/login'),
-    body: {
-      'email':_e,
-      'password':_p,
-    }
-    );
-    if(response.statusCode==200){
+        body: {'email': _email, 'password': _password});
+    if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       print(data['token']);
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>Test(
-        email:_e,
-        password:_p,
-      )), (route) => false);
-     }else if(response.statusCode==400){
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Test(email: _email, password: _password)),
+          (route) => false);
+    }else if(response.statusCode==400){
       final errordata=jsonDecode(response.body);
       if(errordata.containsKey('error')){
         print('${errordata['error']}');
       }
+    } else {
+      print('Login error');
     }
-    else{
-      print('failed');
-    }
-
-
   }
 
-
 }
+class Test1 extends StatefulWidget {
+  const Test1({super.key});
+
+  @override
+  State<Test1> createState() => _Test1State();
+}
+
+class _Test1State extends State<Test1> {
+
+  final TextEditingController _email1 = TextEditingController();
+  final TextEditingController _password1 = TextEditingController();
+  final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
+  @override
+  Widget build(BuildContext context) {
+    return  Scaffold(
+      body: Form(
+        key: _formKey1,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 35,
+            ),
+            const Text('Register Page', style: TextStyle(fontSize: 20)),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: _email1,
+                decoration: InputDecoration(
+                    hintText: 'Email',
+                    labelText: ' Enter your Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    )),
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: _password1,
+                decoration: InputDecoration(
+                    hintText: 'Password',
+                    labelText: ' Enter your Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    )),
+              ),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  if(_formKey1.currentState!.validate()){
+                    _register(_email1.text.toString(),_password1.text.toString());
+                  }
+
+                },
+                child: const Icon(Icons.login)),
+          ],
+        ),
+      ),
+
+    );
+  }
+  Future<void> _register(String _email1, _password1)async{
+    final response = await http.post(Uri.parse('https://reqres.in/api/register'),
+    body: {
+      'email':_email1,
+      'password':_password1
+    });
+    if(response.statusCode==200){
+      final data =jsonDecode(response.body);
+      print(data['token']);
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>MyProfile()), (route) => false);
+    }else{
+      print('register error');
+    }
+
+  }
+}
+
 class Test extends StatefulWidget {
-  const Test({super.key, required String email, required password, });
+  const Test({
+    super.key,
+    required String email,
+    required password,
+  });
 
   @override
   State<Test> createState() => _TestState();
 }
-
+// https://dummyjson.com/users
 class _TestState extends State<Test> {
-  List<dynamic> dad=[];
+   Map<String, dynamic>? onedata;
+ // List<dynamic> dad=[];
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: () { 
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>MyProfile()), (route) => false);
-        }, icon: Icon(CupertinoIcons.back),
-          
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => MyProfile()),
+                (route) => false);
+          },
+          icon: Icon(CupertinoIcons.back),
         ),
         title: Text("ok"),
       ),
-      body: ListView.builder(
-        itemCount: dad.length,
-          itemBuilder: (context ,index){
-          final user=dad[index];
-          final Address= user['hair']['color'];
-          final Address1= user['hair']['type'];
-          //coordinates
-          final Address2 =user ['address']['coordinates']['lat'];
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  '${user['image']}'
-                ),
-              ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text('${user['firstName']}'),
-                      SizedBox(width: 5,),
-                      Text('${Address}'),
-                      SizedBox(width: 5,),
-                      Text('${Address1}'),
-                    ],
-                  ),
-                ],
-              ),
-              subtitle: Text('${Address2}'),
-            ),
-          );
-          })
+      body: onedata==null ?Center(child: Text('Error'),) :Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+         child: ListTile(
+           leading: CircleAvatar(
+             backgroundImage: NetworkImage(
+               '${onedata!['image']}'
+             ),
+           ),
+           title: Text('${onedata!['firstName']}'),
+         ),
+
+
+        ),
+      ),
+
     );
   }
-  Future<void>_testing()async{
-    final response= await http.get(Uri.parse('https://dummyjson.com/users/'));
+  Future<void> maam()async{
+    final response=await http.get(Uri.parse('https://dummyjson.com/users/3'));
     if(response.statusCode==200){
-      final data =jsonDecode(response.body);
-      dad =data['users'];
-      if (kDebugMode) {
-        print(dad);
-      }
-
+      final data=jsonDecode(response.body);
+      onedata =data;
+      print(onedata);
     }else{
-      print('error List');
+      print('Error List');
     }
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _testing();
+    maam();
   }
 }
